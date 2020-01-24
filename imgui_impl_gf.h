@@ -22,20 +22,22 @@
 #define GF_IMGUI_H
 
 #include <gf/Event.h>
+#include <gf/RenderTarget.h>
+#include <gf/Time.h>
 #include <gf/Window.h>
 
 namespace ImGui {
 
-  namespace gf {
+  namespace GF {
 
     void Init(gf::Window& window);
 
     // returns true if the event should not be passed to the game
-    bool ProcessEvent(const Event& event);
+    bool ProcessEvent(const gf::Event& event);
 
     void Update(gf::Time time);
 
-    void Render(RenderTarget& target);
+    void Render(gf::RenderTarget& target);
 
     void Shutdown();
 

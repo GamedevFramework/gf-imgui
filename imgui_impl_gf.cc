@@ -25,11 +25,15 @@
 #include <imgui.h>
 
 #include <gf/Clipboard.h>
+#include <gf/Color.h>
 #include <gf/Keyboard.h>
+#include <gf/Texture.h>
+#include <gf/Unused.h>
+#include <gf/Vertex.h>
 
 namespace ImGui {
 
-  namespace gf {
+  namespace GF {
 
     namespace {
 
@@ -113,6 +117,9 @@ namespace ImGui {
           case gf::Keycode::Z:
             io.KeysDown[ImGuiKey_Z] = pressed;
             break;
+          default:
+            // nothing to do
+            break;
         }
 
         io.KeyCtrl = modifiers.test(gf::Mod::Control);
@@ -131,6 +138,9 @@ namespace ImGui {
             break;
           case gf::MouseButton::Right:
             io.MouseDown[1] = pressed;
+            break;
+          default:
+            // nothing to do
             break;
         }
       }
@@ -152,8 +162,8 @@ namespace ImGui {
         io.KeyMap[i] = i;
       }
 
-      io.SetClipboardTextFn = ImGui_ImplSDL2_SetClipboardText;
-      io.GetClipboardTextFn = SetClipboardText;
+      io.SetClipboardTextFn = SetClipboardText;
+      io.GetClipboardTextFn = GetClipboardText;
       io.ClipboardUserData = nullptr;
 
       io.BackendPlatformUserData = static_cast<void*>(&window);
@@ -163,12 +173,12 @@ namespace ImGui {
       gf::Vector2i size;
       unsigned char *pixels = nullptr;
       io.Fonts->GetTexDataAsRGBA32(&pixels, &size.width, &size.height);
-      auto texture = std::make_unique<gf::Texture>(size);
+      std::unique_ptr<gf::BareTexture> texture = std::make_unique<gf::Texture>(size);
       texture->update(pixels);
       io.Fonts->TexID = static_cast<void*>(texture.release());
     }
 
-    bool ProcessEvent(const Event& event) {
+    bool ProcessEvent(const gf::Event& event) {
       ImGuiIO& io = ImGui::GetIO();
 
 
@@ -178,7 +188,7 @@ namespace ImGui {
           return io.WantCaptureKeyboard;
 
         case gf::EventType::KeyReleased:
-          updateKey(event.key.keycode, event.key.modifiers, false);
+          updateKey(io, event.key.keycode, event.key.modifiers, false);
           return io.WantCaptureKeyboard;
 
         case gf::EventType::MouseWheelScrolled: {
@@ -209,6 +219,10 @@ namespace ImGui {
         case gf::EventType::TextEntered:
           io.AddInputCharactersUTF8(event.text.rune.data);
           return io.WantCaptureKeyboard;
+
+        default:
+          // nothing to do
+          break;
       }
 
       return false;
@@ -231,7 +245,7 @@ namespace ImGui {
       ImGui::NewFrame();
     }
 
-    void Render(RenderTarget& target) {
+    void Render(gf::RenderTarget& target) {
       ImGui::EndFrame();
       ImGui::Render();
       auto data = ImGui::GetDrawData();
@@ -240,7 +254,6 @@ namespace ImGui {
 
       for (int i = 0; i < data->CmdListsCount; ++i) {
         const ImDrawList *list = data->CmdLists[i];
-        const ImDrawVert *vertices = list->VtxBuffer.Data;
 
         // TODO: find something better than this
         std::vector<gf::Vertex> vertices;
@@ -248,7 +261,7 @@ namespace ImGui {
         for (int k = 0; k < list->VtxBuffer.Size; ++k) {
           const ImDrawVert& vertex = list->VtxBuffer.Data[k];
           gf::Vector2f position = { vertex.pos.x, vertex.pos.y };
-          gf::Color4f color = gf::Color::fromRgba32(vertex.col);
+          gf::Color4f color = gf::Color::fromRgba32(vertex.col >> IM_COL32_R_SHIFT, vertex.col >> IM_COL32_G_SHIFT, vertex.col >> IM_COL32_B_SHIFT, vertex.col >> IM_COL32_A_SHIFT);
           gf::Vector2f texCoords = { vertex.uv.x, vertex.uv.y };
           vertices.push_back({ position, color, texCoords });
         }
@@ -261,18 +274,21 @@ namespace ImGui {
           if (command->UserCallback) {
             command->UserCallback(list, command);
           } else {
-            auto texture = static_cast<const gf::Texture *>(command->TextureId);
+            auto texture = static_cast<const gf::BareTexture *>(command->TextureId);
             // set scissor
-            ImVec2 position = draw_data->DisplayPos;
+            ImVec2 position = data->DisplayPos;
             gf::Vector2i min(command->ClipRect.x - position.x, command->ClipRect.y - position.y);
             gf::Vector2i max(command->ClipRect.z - position.x, command->ClipRect.w - position.y);
             gf::RectI scissor = gf::RectI::fromMinMax(min, max);
             target.setScissorBox(scissor);
 
-            target.draw(vertices.data(), indices, command->ElemCount, gf::PrimitiveType::Triangle);
+            gf::RenderStates states;
+            states.texture = texture;
+
+            target.draw(vertices.data(), indices, command->ElemCount, gf::PrimitiveType::Triangles, states);
           }
 
-          indices += pcmd->ElemCount;
+          indices += command->ElemCount;
         }
       }
 
