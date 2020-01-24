@@ -26,23 +26,15 @@
 #include <gf/Time.h>
 #include <gf/Window.h>
 
-namespace ImGui {
+struct ImDrawData;
 
-  namespace GF {
+void ImGui_ImplGF_Init(gf::Window& window, gf::RenderTarget& renderer);
 
-    void Init(gf::Window& window);
+// returns true if the event should not be passed to the game
+bool ImGui_ImplGF_ProcessEvent(const gf::Event& event);
 
-    // returns true if the event should not be passed to the game
-    bool ProcessEvent(const gf::Event& event);
+void ImGui_ImplGF_Update(gf::Time time);
 
-    void Update(gf::Time time);
-
-    void Render(gf::RenderTarget& target);
-
-    void Shutdown();
-
-  }
-
-}
+void ImGui_ImplGF_RenderDrawData(ImDrawData *data);
 
 #endif // GF_IMGUI_H
