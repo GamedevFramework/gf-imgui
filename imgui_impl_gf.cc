@@ -26,6 +26,7 @@
 
 #include <gf/Clipboard.h>
 #include <gf/Color.h>
+#include <gf/Cursor.h>
 #include <gf/Keyboard.h>
 #include <gf/Texture.h>
 #include <gf/Unused.h>
@@ -39,9 +40,9 @@ namespace ImGui {
 
       const char *GetClipboardText(void *user_data) {
         gf::unused(user_data);
-        static std::string clipboard;
-        clipboard = gf::Clipboard::getString();
-        return clipboard.c_str();
+        static std::string g_clipboard;
+        g_clipboard = gf::Clipboard::getString();
+        return g_clipboard.c_str();
       }
 
       void SetClipboardText(void *user_data, const char *text) {
@@ -49,7 +50,7 @@ namespace ImGui {
         gf::Clipboard::setString(text);
       }
 
-      void updateKey(ImGuiIO& io, gf::Keycode keycode, gf::Modifiers modifiers, bool pressed) {
+      void UpdateKey(ImGuiIO& io, gf::Keycode keycode, gf::Modifiers modifiers, bool pressed) {
         switch (keycode) {
           case gf::Keycode::Tab:
             io.KeysDown[ImGuiKey_Tab] = pressed;
@@ -128,7 +129,7 @@ namespace ImGui {
         io.KeySuper = modifiers.test(gf::Mod::Super);
       }
 
-      void updateMouseButton(ImGuiIO& io, gf::MouseButton button, bool pressed) {
+      void UpdateMouseButton(ImGuiIO& io, gf::MouseButton button, bool pressed) {
         switch (button) {
           case gf::MouseButton::Left:
             io.MouseDown[0] = pressed;
@@ -145,6 +146,57 @@ namespace ImGui {
         }
       }
 
+
+      void UpdateMouseCursor(ImGuiIO& io, gf::Window& window) {
+        if (io.ConfigFlags & ImGuiConfigFlags_NoMouseCursorChange) {
+          return;
+        }
+
+        ImGuiMouseCursor cursor = ImGui::GetMouseCursor();
+
+        if (io.MouseDrawCursor || cursor == ImGuiMouseCursor_None) {
+          window.setMouseCursorVisible(false);
+        } else {
+          static gf::Cursor g_cursor;
+
+          switch (cursor) {
+            case ImGuiMouseCursor_Arrow:
+              g_cursor = gf::Cursor(gf::Cursor::Arrow);
+              break;
+            case ImGuiMouseCursor_TextInput:
+              g_cursor = gf::Cursor(gf::Cursor::Text);
+              break;
+            case ImGuiMouseCursor_ResizeAll:
+              g_cursor = gf::Cursor(gf::Cursor::SizeAll);
+              break;
+            case ImGuiMouseCursor_ResizeNS:
+              g_cursor = gf::Cursor(gf::Cursor::SizeVertical);
+              break;
+            case ImGuiMouseCursor_ResizeEW:
+              g_cursor = gf::Cursor(gf::Cursor::SizeHorizontal);
+              break;
+            case ImGuiMouseCursor_ResizeNESW:
+              g_cursor = gf::Cursor(gf::Cursor::SizeBottomLeftTopRight);
+              break;
+            case ImGuiMouseCursor_ResizeNWSE:
+              g_cursor = gf::Cursor(gf::Cursor::SizeTopLeftBottomRight);
+              break;
+            case ImGuiMouseCursor_Hand:
+              g_cursor = gf::Cursor(gf::Cursor::Hand);
+              break;
+            case ImGuiMouseCursor_NotAllowed:
+              g_cursor = gf::Cursor(gf::Cursor::NotAllowed);
+              break;
+            default:
+              g_cursor = gf::Cursor(gf::Cursor::Arrow);
+              break;
+          }
+
+          window.setMouseCursorVisible(true);
+          window.setMouseCursor(g_cursor);
+        }
+      }
+
     }
 
 
@@ -153,7 +205,7 @@ namespace ImGui {
       ImGuiIO& io = ImGui::GetIO();
 
 //       io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
-//       io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
+      io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 //       io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
 
       io.BackendPlatformName = "imgui_impl_gf";
@@ -184,11 +236,11 @@ namespace ImGui {
 
       switch (event.type) {
         case gf::EventType::KeyPressed:
-          updateKey(io, event.key.keycode, event.key.modifiers, true);
+          UpdateKey(io, event.key.keycode, event.key.modifiers, true);
           return io.WantCaptureKeyboard;
 
         case gf::EventType::KeyReleased:
-          updateKey(io, event.key.keycode, event.key.modifiers, false);
+          UpdateKey(io, event.key.keycode, event.key.modifiers, false);
           return io.WantCaptureKeyboard;
 
         case gf::EventType::MouseWheelScrolled: {
@@ -203,11 +255,11 @@ namespace ImGui {
         }
 
         case gf::EventType::MouseButtonPressed:
-          updateMouseButton(io, event.mouseButton.button, true);
+          UpdateMouseButton(io, event.mouseButton.button, true);
           return io.WantCaptureMouse;
 
         case gf::EventType::MouseButtonReleased:
-          updateMouseButton(io, event.mouseButton.button, false);
+          UpdateMouseButton(io, event.mouseButton.button, false);
           return io.WantCaptureMouse;
 
         case gf::EventType::MouseMoved: {
@@ -242,11 +294,12 @@ namespace ImGui {
 
       io.DeltaTime = time.asSeconds();
 
+      UpdateMouseCursor(io, *window);
+
       ImGui::NewFrame();
     }
 
     void Render(gf::RenderTarget& target) {
-      ImGui::EndFrame();
       ImGui::Render();
       auto data = ImGui::GetDrawData();
 
