@@ -154,43 +154,48 @@ namespace {
     if (io.MouseDrawCursor || cursor == ImGuiMouseCursor_None) {
       window.setMouseCursorVisible(false);
     } else {
+      static ImGuiMouseCursor g_previous = ImGuiMouseCursor_None;
       static gf::Cursor g_cursor;
 
-      switch (cursor) {
-        case ImGuiMouseCursor_Arrow:
-          g_cursor = gf::Cursor(gf::Cursor::Arrow);
-          break;
-        case ImGuiMouseCursor_TextInput:
-          g_cursor = gf::Cursor(gf::Cursor::Text);
-          break;
-        case ImGuiMouseCursor_ResizeAll:
-          g_cursor = gf::Cursor(gf::Cursor::SizeAll);
-          break;
-        case ImGuiMouseCursor_ResizeNS:
-          g_cursor = gf::Cursor(gf::Cursor::SizeVertical);
-          break;
-        case ImGuiMouseCursor_ResizeEW:
-          g_cursor = gf::Cursor(gf::Cursor::SizeHorizontal);
-          break;
-        case ImGuiMouseCursor_ResizeNESW:
-          g_cursor = gf::Cursor(gf::Cursor::SizeBottomLeftTopRight);
-          break;
-        case ImGuiMouseCursor_ResizeNWSE:
-          g_cursor = gf::Cursor(gf::Cursor::SizeTopLeftBottomRight);
-          break;
-        case ImGuiMouseCursor_Hand:
-          g_cursor = gf::Cursor(gf::Cursor::Hand);
-          break;
-        case ImGuiMouseCursor_NotAllowed:
-          g_cursor = gf::Cursor(gf::Cursor::NotAllowed);
-          break;
-        default:
-          g_cursor = gf::Cursor(gf::Cursor::Arrow);
-          break;
-      }
+      if (cursor != g_previous) {
+        switch (cursor) {
+          case ImGuiMouseCursor_Arrow:
+            g_cursor = gf::Cursor(gf::Cursor::Arrow);
+            break;
+          case ImGuiMouseCursor_TextInput:
+            g_cursor = gf::Cursor(gf::Cursor::Text);
+            break;
+          case ImGuiMouseCursor_ResizeAll:
+            g_cursor = gf::Cursor(gf::Cursor::SizeAll);
+            break;
+          case ImGuiMouseCursor_ResizeNS:
+            g_cursor = gf::Cursor(gf::Cursor::SizeVertical);
+            break;
+          case ImGuiMouseCursor_ResizeEW:
+            g_cursor = gf::Cursor(gf::Cursor::SizeHorizontal);
+            break;
+          case ImGuiMouseCursor_ResizeNESW:
+            g_cursor = gf::Cursor(gf::Cursor::SizeBottomLeftTopRight);
+            break;
+          case ImGuiMouseCursor_ResizeNWSE:
+            g_cursor = gf::Cursor(gf::Cursor::SizeTopLeftBottomRight);
+            break;
+          case ImGuiMouseCursor_Hand:
+            g_cursor = gf::Cursor(gf::Cursor::Hand);
+            break;
+          case ImGuiMouseCursor_NotAllowed:
+            g_cursor = gf::Cursor(gf::Cursor::NotAllowed);
+            break;
+          default:
+            g_cursor = gf::Cursor(gf::Cursor::Arrow);
+            break;
+        }
 
-      window.setMouseCursorVisible(true);
-      window.setMouseCursor(g_cursor);
+        window.setMouseCursorVisible(true);
+        window.setMouseCursor(g_cursor);
+
+        g_previous = cursor;
+      }
     }
   }
 
