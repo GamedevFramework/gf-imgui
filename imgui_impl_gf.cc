@@ -143,6 +143,78 @@ namespace {
     }
   }
 
+  void UpdateGamepadButton(ImGuiIO& io, gf::GamepadButton button, float value) {
+    if ((io.ConfigFlags & ImGuiConfigFlags_NavEnableGamepad) == 0) {
+      return;
+    }
+
+    switch (button) {
+      case gf::GamepadButton::A:
+        io.NavInputs[ImGuiNavInput_Activate] = value;
+        break;
+      case gf::GamepadButton::B:
+        io.NavInputs[ImGuiNavInput_Cancel] = value;
+        break;
+      case gf::GamepadButton::X:
+        io.NavInputs[ImGuiNavInput_Menu] = value;
+        break;
+      case gf::GamepadButton::Y:
+        io.NavInputs[ImGuiNavInput_Input] = value;
+        break;
+      case gf::GamepadButton::DPadLeft:
+        io.NavInputs[ImGuiNavInput_DpadLeft] = value;
+        break;
+      case gf::GamepadButton::DPadRight:
+        io.NavInputs[ImGuiNavInput_DpadRight] = value;
+        break;
+      case gf::GamepadButton::DPadUp:
+        io.NavInputs[ImGuiNavInput_DpadUp] = value;
+        break;
+      case gf::GamepadButton::DPadDown:
+        io.NavInputs[ImGuiNavInput_DpadDown] = value;
+        break;
+      case gf::GamepadButton::LeftBumper:
+        io.NavInputs[ImGuiNavInput_FocusPrev] = value;
+        io.NavInputs[ImGuiNavInput_TweakSlow] = value;
+        break;
+      case gf::GamepadButton::RightBumper:
+        io.NavInputs[ImGuiNavInput_FocusNext] = value;
+        io.NavInputs[ImGuiNavInput_TweakFast] = value;
+        break;
+      default:
+        // nothing to do
+        break;
+    }
+
+  }
+
+  void UpdateGamepadAxis(ImGuiIO& io, gf::GamepadAxis axis, int16_t raw) {
+    if ((io.ConfigFlags & ImGuiConfigFlags_NavEnableGamepad) == 0) {
+      return;
+    }
+
+    static constexpr int16_t Threshold = 8000;
+
+    switch (axis) {
+      case gf::GamepadAxis::LeftX:
+        if (raw > Threshold) {
+          io.NavInputs[ImGuiNavInput_LStickRight] = 1.0f;
+        } else if (raw < -Threshold) {
+          io.NavInputs[ImGuiNavInput_LStickLeft] = 1.0f;
+        }
+        break;
+      case gf::GamepadAxis::LeftY:
+        if (raw > Threshold) {
+          io.NavInputs[ImGuiNavInput_LStickDown] = 1.0f;
+        } else if (raw < -Threshold) {
+          io.NavInputs[ImGuiNavInput_LStickUp] = 1.0f;
+        }
+        break;
+      default:
+        // nothing to do
+        break;
+    }
+  }
 
   void UpdateMouseCursor(ImGuiIO& io, gf::Window& window) {
     if (io.ConfigFlags & ImGuiConfigFlags_NoMouseCursorChange) {
@@ -205,7 +277,7 @@ namespace {
 void ImGui_ImplGF_Init(gf::Window& window, gf::RenderTarget& renderer) {
   ImGuiIO& io = ImGui::GetIO();
 
-//       io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
+  io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
   io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 //       io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
 
@@ -270,6 +342,18 @@ bool ImGui_ImplGF_ProcessEvent(const gf::Event& event) {
       io.MousePos = ImVec2(pos.x, pos.y);
       return io.WantCaptureMouse;
     }
+
+    case gf::EventType::GamepadButtonPressed:
+      UpdateGamepadButton(io, event.gamepadButton.button, 1.0f);
+      break;
+
+    case gf::EventType::GamepadButtonReleased:
+      UpdateGamepadButton(io, event.gamepadButton.button, 0.0f);
+      break;
+
+    case gf::EventType::GamepadAxisMoved:
+      UpdateGamepadAxis(io, event.gamepadAxis.axis, event.gamepadAxis.value);
+      break;
 
     case gf::EventType::TextEntered:
       io.AddInputCharactersUTF8(event.text.rune.data);
