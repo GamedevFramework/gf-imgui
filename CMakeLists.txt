@@ -9,10 +9,10 @@ find_package(gf REQUIRED)
 add_executable(example_gf
   imgui_impl_gf.cc
   example_gf/main.cc
-  example_gf/imgui/imgui.cpp
-  example_gf/imgui/imgui_demo.cpp
-  example_gf/imgui/imgui_draw.cpp
-  example_gf/imgui/imgui_widgets.cpp
+  imgui/imgui.cpp
+  imgui/imgui_demo.cpp
+  imgui/imgui_draw.cpp
+  imgui/imgui_widgets.cpp
 )
 
 target_compile_options(example_gf
@@ -32,7 +32,7 @@ set_target_properties(example_gf
 
 target_include_directories(example_gf
   PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/example_gf/imgui"
+    "${CMAKE_CURRENT_SOURCE_DIR}/imgui"
     "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 

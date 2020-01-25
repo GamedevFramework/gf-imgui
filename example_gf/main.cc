@@ -46,8 +46,12 @@ int main() {
   gf::RenderWindow renderer(window);
 
   ImGui::CreateContext();
+  ImGuiIO& io = ImGui::GetIO();
   // config
+  io.ConfigFlags = ImGuiConfigFlags_NavEnableKeyboard;
+  io.IniFilename = nullptr;
   // load font(s)
+  // io.Fonts->AddFontFromFileTTF("font.ttf", size_pixels);
   ImGui_ImplGF_Init(window, renderer);
 
   // views

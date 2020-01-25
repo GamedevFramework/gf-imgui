@@ -1,3 +1,3 @@
 [submodule "example_gf/imgui"]
-	path = example_gf/imgui
+	path = imgui
 	url = https://github.com/ocornut/imgui.git
