@@ -388,6 +388,8 @@ void ImGui_ImplGF_RenderDrawData(ImDrawData *data) {
   ImGuiIO& io = ImGui::GetIO();
   auto target = static_cast<gf::RenderTarget*>(io.BackendRendererUserData);
 
+  auto originalScissor = target->getCanonicalScissorBox();
+
   for (int i = 0; i < data->CmdListsCount; ++i) {
     const ImDrawList *list = data->CmdLists[i];
 
@@ -428,5 +430,6 @@ void ImGui_ImplGF_RenderDrawData(ImDrawData *data) {
     }
   }
 
+  target->setCanonicalScissorBox(originalScissor);
 }
 
