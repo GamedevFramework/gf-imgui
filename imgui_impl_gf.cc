@@ -421,7 +421,7 @@ void ImGui_ImplGF_RenderDrawData(ImDrawData *data) {
         target->setScissorBox(scissor);
 
         gf::RenderStates states;
-        states.texture = texture;
+        states.texture[0] = texture;
 
         target->draw(vertices.data(), indices, command->ElemCount, gf::PrimitiveType::Triangles, states);
       }

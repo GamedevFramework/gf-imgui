@@ -103,8 +103,9 @@ int main() {
     while (window.pollEvent(event)) {
       if (!ImGui_ImplGF_ProcessEvent(event)) {
         actions.processEvent(event);
-        views.processEvent(event);
       }
+
+      views.processEvent(event);
     }
 
     if (closeWindowAction.isActive()) {
