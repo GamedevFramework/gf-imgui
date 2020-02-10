@@ -33,7 +33,7 @@
 #include <imgui_impl_gf.h>
 
 int main() {
-  static constexpr gf::Vector2u ScreenSize(1024, 576);
+  static constexpr gf::Vector2u ScreenSize(1280, 720);
   static constexpr gf::Vector2f ViewSize(100.0f, 100.0f);
   static constexpr gf::Vector2f ViewCenter(0.0f, 0.0f);
 
@@ -64,7 +64,7 @@ int main() {
   gf::ScreenView hudView;
   views.addView(hudView);
 
-  views.setInitialScreenSize(ScreenSize);
+  views.setInitialFramebufferSize(ScreenSize);
 
   // actions
 
@@ -91,7 +91,7 @@ int main() {
 
   bool showDemo = true;
 
-  renderer.clear(gf::Color::White);
+  renderer.clear(gf::Color::Gray());
 
   gf::Clock clock;
 

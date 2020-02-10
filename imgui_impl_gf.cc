@@ -385,6 +385,13 @@ void ImGui_ImplGF_Update(gf::Time time) {
 }
 
 void ImGui_ImplGF_RenderDrawData(ImDrawData *data) {
+
+  static constexpr gf::RenderAttributeInfo CustomAttributes[] = {
+    { "a_position",   2,  gf::RenderAttributeType::Float, false,  offsetof(ImDrawVert, pos) },
+    { "a_texCoords",  2,  gf::RenderAttributeType::Float, false,  offsetof(ImDrawVert, uv)  },
+    { "a_color",      4,  gf::RenderAttributeType::UByte, true,   offsetof(ImDrawVert, col) },
+  };
+
   ImGuiIO& io = ImGui::GetIO();
   auto target = static_cast<gf::RenderTarget*>(io.BackendRendererUserData);
 
@@ -392,18 +399,6 @@ void ImGui_ImplGF_RenderDrawData(ImDrawData *data) {
 
   for (int i = 0; i < data->CmdListsCount; ++i) {
     const ImDrawList *list = data->CmdLists[i];
-
-    // TODO: find something better than this
-    std::vector<gf::Vertex> vertices;
-
-    for (int k = 0; k < list->VtxBuffer.Size; ++k) {
-      const ImDrawVert& vertex = list->VtxBuffer.Data[k];
-      gf::Vector2f position = { vertex.pos.x, vertex.pos.y };
-      gf::Color4f color = gf::Color::fromRgba32(vertex.col >> IM_COL32_R_SHIFT, vertex.col >> IM_COL32_G_SHIFT, vertex.col >> IM_COL32_B_SHIFT, vertex.col >> IM_COL32_A_SHIFT);
-      gf::Vector2f texCoords = { vertex.uv.x, vertex.uv.y };
-      vertices.push_back({ position, color, texCoords });
-    }
-
     const ImDrawIdx *indices = list->IdxBuffer.Data;
 
     for (int j = 0; j < list->CmdBuffer.Size; ++j) {
@@ -423,7 +418,7 @@ void ImGui_ImplGF_RenderDrawData(ImDrawData *data) {
         gf::RenderStates states;
         states.texture[0] = texture;
 
-        target->draw(vertices.data(), indices, command->ElemCount, gf::PrimitiveType::Triangles, states);
+        target->customDraw(list->VtxBuffer.Data, sizeof(ImDrawVert), indices, command->ElemCount, gf::PrimitiveType::Triangles, CustomAttributes, states);
       }
 
       indices += command->ElemCount;
