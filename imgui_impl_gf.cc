@@ -47,7 +47,7 @@ namespace {
     gf::Clipboard::setString(text);
   }
 
-  void UpdateKey(ImGuiIO& io, gf::Keycode keycode, gf::Modifiers modifiers, bool pressed) {
+  void UpdateKey(ImGuiIO& io, gf::Keycode keycode, gf::Flags<gf::Mod> modifiers, bool pressed) {
     switch (keycode) {
       case gf::Keycode::Tab:
         io.KeysDown[ImGuiKey_Tab] = pressed;
