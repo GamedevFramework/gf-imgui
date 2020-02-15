@@ -428,3 +428,9 @@ void ImGui_ImplGF_RenderDrawData(ImDrawData *data) {
   target->setCanonicalScissorBox(originalScissor);
 }
 
+void ImGui_ImplGF_Shutdown() {
+  ImGuiIO& io = ImGui::GetIO();
+  auto texture = static_cast<gf::Texture *>(io.Fonts->TexID);
+  delete texture;
+  io.Fonts->TexID = nullptr;
+}

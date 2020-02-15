@@ -37,4 +37,6 @@ void ImGui_ImplGF_Update(gf::Time time);
 
 void ImGui_ImplGF_RenderDrawData(ImDrawData *data);
 
+void ImGui_ImplGF_Shutdown();
+
 #endif // GF_IMGUI_H

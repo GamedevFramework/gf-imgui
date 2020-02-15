@@ -145,6 +145,7 @@ int main() {
     actions.reset();
   }
 
+  ImGui_ImplGF_Shutdown();
   ImGui::DestroyContext();
 
   return 0;
