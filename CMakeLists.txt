@@ -38,5 +38,5 @@ target_include_directories(example_gf
 
 target_link_libraries(example_gf
   PRIVATE
-    gf::gf0
+    gf::graphics
 )
