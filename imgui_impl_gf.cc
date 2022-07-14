@@ -29,21 +29,18 @@
 #include <gf/Cursor.h>
 #include <gf/Keyboard.h>
 #include <gf/Texture.h>
-#include <gf/Unused.h>
 #include <gf/Vertex.h>
 
 
 namespace {
 
-  const char *GetClipboardText(void *user_data) {
-    gf::unused(user_data);
+  const char *GetClipboardText([[maybe_unused]] void *user_data) {
     static std::string g_clipboard;
     g_clipboard = gf::Clipboard::getString();
     return g_clipboard.c_str();
   }
 
-  void SetClipboardText(void *user_data, const char *text) {
-    gf::unused(user_data);
+  void SetClipboardText([[maybe_unused]] void *user_data, const char *text) {
     gf::Clipboard::setString(text);
   }
 
