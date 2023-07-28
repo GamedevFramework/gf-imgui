@@ -33,7 +33,7 @@
 #include <imgui_impl_gf.h>
 
 int main() {
-  static constexpr gf::Vector2u ScreenSize(1280, 720);
+  static constexpr gf::Vector2u ScreenSize(1920, 1080);
   static constexpr gf::Vector2f ViewSize(100.0f, 100.0f);
   static constexpr gf::Vector2f ViewCenter(0.0f, 0.0f);
 

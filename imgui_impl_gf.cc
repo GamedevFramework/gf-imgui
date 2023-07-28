@@ -47,70 +47,70 @@ namespace {
   void UpdateKey(ImGuiIO& io, gf::Keycode keycode, gf::Flags<gf::Mod> modifiers, bool pressed) {
     switch (keycode) {
       case gf::Keycode::Tab:
-        io.KeysDown[ImGuiKey_Tab] = pressed;
+        io.AddKeyEvent(ImGuiKey_Tab, pressed);
         break;
       case gf::Keycode::Left:
-        io.KeysDown[ImGuiKey_LeftArrow] = pressed;
+        io.AddKeyEvent(ImGuiKey_LeftArrow, pressed);
         break;
       case gf::Keycode::Right:
-        io.KeysDown[ImGuiKey_RightArrow] = pressed;
+        io.AddKeyEvent(ImGuiKey_RightArrow, pressed);
         break;
       case gf::Keycode::Up:
-        io.KeysDown[ImGuiKey_UpArrow] = pressed;
+        io.AddKeyEvent(ImGuiKey_UpArrow, pressed);
         break;
       case gf::Keycode::Down:
-        io.KeysDown[ImGuiKey_DownArrow] = pressed;
+        io.AddKeyEvent(ImGuiKey_DownArrow, pressed);
         break;
       case gf::Keycode::PageUp:
-        io.KeysDown[ImGuiKey_PageUp] = pressed;
+        io.AddKeyEvent(ImGuiKey_PageUp, pressed);
         break;
       case gf::Keycode::PageDown:
-        io.KeysDown[ImGuiKey_PageDown] = pressed;
+        io.AddKeyEvent(ImGuiKey_PageDown, pressed);
         break;
       case gf::Keycode::Home:
-        io.KeysDown[ImGuiKey_Home] = pressed;
+        io.AddKeyEvent(ImGuiKey_Home, pressed);
         break;
       case gf::Keycode::End:
-        io.KeysDown[ImGuiKey_End] = pressed;
+        io.AddKeyEvent(ImGuiKey_End, pressed);
         break;
       case gf::Keycode::Insert:
-        io.KeysDown[ImGuiKey_Insert] = pressed;
+        io.AddKeyEvent(ImGuiKey_Insert, pressed);
         break;
       case gf::Keycode::Delete:
-        io.KeysDown[ImGuiKey_Delete] = pressed;
+        io.AddKeyEvent(ImGuiKey_Delete, pressed);
         break;
       case gf::Keycode::Backspace:
-        io.KeysDown[ImGuiKey_Backspace] = pressed;
+        io.AddKeyEvent(ImGuiKey_Backspace, pressed);
         break;
       case gf::Keycode::Space:
-        io.KeysDown[ImGuiKey_Space] = pressed;
+        io.AddKeyEvent(ImGuiKey_Space, pressed);
         break;
       case gf::Keycode::Return:
-        io.KeysDown[ImGuiKey_Enter] = pressed;
+        io.AddKeyEvent(ImGuiKey_Enter, pressed);
         break;
       case gf::Keycode::Escape:
-        io.KeysDown[ImGuiKey_Escape] = pressed;
+        io.AddKeyEvent(ImGuiKey_Escape, pressed);
         break;
       case gf::Keycode::NumpadEnter:
-        io.KeysDown[ImGuiKey_KeyPadEnter] = pressed;
+        io.AddKeyEvent(ImGuiKey_KeypadEnter, pressed);
         break;
       case gf::Keycode::A:
-        io.KeysDown[ImGuiKey_A] = pressed;
+        io.AddKeyEvent(ImGuiKey_A, pressed);
         break;
       case gf::Keycode::C:
-        io.KeysDown[ImGuiKey_C] = pressed;
+        io.AddKeyEvent(ImGuiKey_C, pressed);
         break;
       case gf::Keycode::V:
-        io.KeysDown[ImGuiKey_V] = pressed;
+        io.AddKeyEvent(ImGuiKey_V, pressed);
         break;
       case gf::Keycode::X:
-        io.KeysDown[ImGuiKey_X] = pressed;
+        io.AddKeyEvent(ImGuiKey_X, pressed);
         break;
       case gf::Keycode::Y:
-        io.KeysDown[ImGuiKey_Y] = pressed;
+        io.AddKeyEvent(ImGuiKey_Y, pressed);
         break;
       case gf::Keycode::Z:
-        io.KeysDown[ImGuiKey_Z] = pressed;
+        io.AddKeyEvent(ImGuiKey_Z, pressed);
         break;
       default:
         // nothing to do
@@ -126,13 +126,13 @@ namespace {
   void UpdateMouseButton(ImGuiIO& io, gf::MouseButton button, bool pressed) {
     switch (button) {
       case gf::MouseButton::Left:
-        io.MouseDown[0] = pressed;
+        io.AddMouseButtonEvent(0, pressed);
         break;
       case gf::MouseButton::Middle:
-        io.MouseDown[2] = pressed;
+        io.AddMouseButtonEvent(2, pressed);
         break;
       case gf::MouseButton::Right:
-        io.MouseDown[1] = pressed;
+        io.AddMouseButtonEvent(1, pressed);
         break;
       default:
         // nothing to do
@@ -140,43 +140,41 @@ namespace {
     }
   }
 
-  void UpdateGamepadButton(ImGuiIO& io, gf::GamepadButton button, float value) {
+  void UpdateGamepadButton(ImGuiIO& io, gf::GamepadButton button, bool pressed, float value) {
     if ((io.ConfigFlags & ImGuiConfigFlags_NavEnableGamepad) == 0) {
       return;
     }
 
     switch (button) {
       case gf::GamepadButton::A:
-        io.NavInputs[ImGuiNavInput_Activate] = value;
+        io.AddKeyAnalogEvent(ImGuiKey_GamepadFaceDown, pressed, value);
         break;
       case gf::GamepadButton::B:
-        io.NavInputs[ImGuiNavInput_Cancel] = value;
+        io.AddKeyAnalogEvent(ImGuiKey_GamepadFaceRight, pressed, value);
         break;
       case gf::GamepadButton::X:
-        io.NavInputs[ImGuiNavInput_Menu] = value;
+        io.AddKeyAnalogEvent(ImGuiKey_GamepadFaceLeft, pressed, value);
         break;
       case gf::GamepadButton::Y:
-        io.NavInputs[ImGuiNavInput_Input] = value;
+        io.AddKeyAnalogEvent(ImGuiKey_GamepadFaceUp, pressed, value);
         break;
       case gf::GamepadButton::DPadLeft:
-        io.NavInputs[ImGuiNavInput_DpadLeft] = value;
+        io.AddKeyAnalogEvent(ImGuiKey_GamepadDpadLeft, pressed, value);
         break;
       case gf::GamepadButton::DPadRight:
-        io.NavInputs[ImGuiNavInput_DpadRight] = value;
+        io.AddKeyAnalogEvent(ImGuiKey_GamepadDpadRight, pressed, value);
         break;
       case gf::GamepadButton::DPadUp:
-        io.NavInputs[ImGuiNavInput_DpadUp] = value;
+        io.AddKeyAnalogEvent(ImGuiKey_GamepadDpadUp, pressed, value);
         break;
       case gf::GamepadButton::DPadDown:
-        io.NavInputs[ImGuiNavInput_DpadDown] = value;
+        io.AddKeyAnalogEvent(ImGuiKey_GamepadDpadDown, pressed, value);
         break;
       case gf::GamepadButton::LeftBumper:
-        io.NavInputs[ImGuiNavInput_FocusPrev] = value;
-        io.NavInputs[ImGuiNavInput_TweakSlow] = value;
+        io.AddKeyAnalogEvent(ImGuiKey_GamepadL1, pressed, value);
         break;
       case gf::GamepadButton::RightBumper:
-        io.NavInputs[ImGuiNavInput_FocusNext] = value;
-        io.NavInputs[ImGuiNavInput_TweakFast] = value;
+        io.AddKeyAnalogEvent(ImGuiKey_GamepadR1, pressed, value);
         break;
       default:
         // nothing to do
@@ -195,16 +193,22 @@ namespace {
     switch (axis) {
       case gf::GamepadAxis::LeftX:
         if (raw > Threshold) {
-          io.NavInputs[ImGuiNavInput_LStickRight] = 1.0f;
+          io.AddKeyAnalogEvent(ImGuiKey_GamepadLStickRight, true, 1.0f);
         } else if (raw < -Threshold) {
-          io.NavInputs[ImGuiNavInput_LStickLeft] = 1.0f;
+          io.AddKeyAnalogEvent(ImGuiKey_GamepadLStickLeft, true, 1.0f);
+        } else {
+          io.AddKeyAnalogEvent(ImGuiKey_GamepadLStickRight, false, 0.0f);
+          io.AddKeyAnalogEvent(ImGuiKey_GamepadLStickLeft, false, 0.0f);
         }
         break;
       case gf::GamepadAxis::LeftY:
         if (raw > Threshold) {
-          io.NavInputs[ImGuiNavInput_LStickDown] = 1.0f;
+          io.AddKeyAnalogEvent(ImGuiKey_GamepadLStickDown, true, 1.0f);
         } else if (raw < -Threshold) {
-          io.NavInputs[ImGuiNavInput_LStickUp] = 1.0f;
+          io.AddKeyAnalogEvent(ImGuiKey_GamepadLStickUp, true, 1.0f);
+        } else {
+          io.AddKeyAnalogEvent(ImGuiKey_GamepadLStickDown, false, 0.0f);
+          io.AddKeyAnalogEvent(ImGuiKey_GamepadLStickUp, false, 0.0f);
         }
         break;
       default:
@@ -278,11 +282,9 @@ void ImGui_ImplGF_Init(gf::Window& window, gf::RenderTarget& renderer) {
   io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 //       io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
 
-  io.BackendPlatformName = "imgui_impl_gf";
+  io.FontGlobalScale = 2.0f;
 
-  for (int i = 0; i < ImGuiKey_COUNT; ++i) {
-    io.KeyMap[i] = i;
-  }
+  io.BackendPlatformName = "imgui_impl_gf";
 
   io.SetClipboardTextFn = SetClipboardText;
   io.GetClipboardTextFn = GetClipboardText;
@@ -336,16 +338,16 @@ bool ImGui_ImplGF_ProcessEvent(const gf::Event& event) {
 
     case gf::EventType::MouseMoved: {
       gf::Vector2f pos = event.mouseCursor.coords;
-      io.MousePos = ImVec2(pos.x, pos.y);
+      io.AddMousePosEvent(pos.x, pos.y);
       return io.WantCaptureMouse;
     }
 
     case gf::EventType::GamepadButtonPressed:
-      UpdateGamepadButton(io, event.gamepadButton.button, 1.0f);
+      UpdateGamepadButton(io, event.gamepadButton.button, true, 1.0f);
       break;
 
     case gf::EventType::GamepadButtonReleased:
-      UpdateGamepadButton(io, event.gamepadButton.button, 0.0f);
+      UpdateGamepadButton(io, event.gamepadButton.button, false, 0.0f);
       break;
 
     case gf::EventType::GamepadAxisMoved:

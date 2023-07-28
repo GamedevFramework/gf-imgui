@@ -21,6 +21,12 @@ target_compile_options(example_gf
     "-Wall" "-Wextra"
 )
 
+target_compile_definitions(example_gf
+  PRIVATE
+    IMGUI_DISABLE_OBSOLETE_FUNCTIONS
+    IMGUI_DISABLE_OBSOLETE_KEYIO
+)
+
 target_compile_features(example_gf
   PUBLIC
     cxx_std_14
